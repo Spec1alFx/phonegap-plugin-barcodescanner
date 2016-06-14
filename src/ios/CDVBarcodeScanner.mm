@@ -477,7 +477,7 @@ parentViewController:(UIViewController*)parentViewController
     for (AVMetadataObject *metadata in metadataObjects) {
         AVMetadataMachineReadableCodeObject *barcodeObject = (AVMetadataMachineReadableCodeObject *)[self.previewLayer transformedMetadataObjectForMetadataObject:metadata];
         resultString = [(AVMetadataMachineReadableCodeObject *)barcodeObject stringValue];
-        NSString* format = @"CODE_39";//[self formatStringFrom:metadata.type];
+        NSString* format = [self formatStringFrom:metadata.type];
         [self barcodeScanSucceeded:resultString format:format];
     }
 }
