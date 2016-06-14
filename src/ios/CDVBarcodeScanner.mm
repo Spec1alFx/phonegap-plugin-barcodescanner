@@ -449,17 +449,52 @@ parentViewController:(UIViewController*)parentViewController
     }
 
     [output setMetadataObjectsDelegate:self queue:dispatch_get_main_queue()];
-    // TODO: check dynamic formats
-    output.metadataObjectTypes = @[AVMetadataObjectTypeUPCECode,
-                                   AVMetadataObjectTypeCode39Code,
-                                   AVMetadataObjectTypeCode39Mod43Code,
-                                   AVMetadataObjectTypeEAN13Code,
-                                   AVMetadataObjectTypeEAN8Code,
-                                   AVMetadataObjectTypeCode93Code,
-                                   AVMetadataObjectTypeCode128Code,
-                                   AVMetadataObjectTypePDF417Code,
-                                   AVMetadataObjectTypeQRCode,
-                                   AVMetadataObjectTypeAztecCode];
+
+    NSArray *supportedFormats = nil;
+    NSMutableArray *barcodeTypes = [[NSMutableArray alloc] init];
+    if (self.formats != nil) {
+        supportedFormats = [self.formats componentsSeparatedByString:@","];
+    }
+
+    // Opt in only
+    if ([supportedFormats containsObject:[self formatStringFrom:AVMetadataObjectTypeAztecCode]]) {
+      [barcodeTypes addObject:AVMetadataObjectTypeAztecCode];
+    }
+    if ([supportedFormats containsObject:[self formatStringFrom:AVMetadataObjectTypePDF417Code]]) {
+      [barcodeTypes addObject:AVMetadataObjectTypePDF417Code];
+    }
+
+    if (supportedFormats == nil || [supportedFormats containsObject:[self formatStringFrom:AVMetadataObjectTypeCode128Code]]) {
+      [barcodeTypes addObject:AVMetadataObjectTypeCode128Code];
+    }
+    if (supportedFormats == nil || [supportedFormats containsObject:[self formatStringFrom:AVMetadataObjectTypeCode39Code]]) {
+      [barcodeTypes addObject:AVMetadataObjectTypeCode39Code];
+    }
+    if (supportedFormats == nil || [supportedFormats containsObject:[self formatStringFrom:AVMetadataObjectTypeCode93Code]]) {
+      [barcodeTypes addObject:AVMetadataObjectTypeCode93Code];
+    }
+    if (supportedFormats == nil || [supportedFormats containsObject:[self formatStringFrom:AVMetadataObjectTypeDataMatrixCode]]) {
+      [barcodeTypes addObject:AVMetadataObjectTypeDataMatrixCode];
+    }
+    if (supportedFormats == nil || [supportedFormats containsObject:[self formatStringFrom:AVMetadataObjectTypeEAN13Code]]) {
+      [barcodeTypes addObject:AVMetadataObjectTypeEAN13Code];
+    }
+    if (supportedFormats == nil || [supportedFormats containsObject:[self formatStringFrom:AVMetadataObjectTypeEAN8Code]]) {
+      [barcodeTypes addObject:AVMetadataObjectTypeEAN8Code];
+    }
+    if (supportedFormats == nil || [supportedFormats containsObject:[self formatStringFrom:AVMetadataObjectTypeITF14Code]]) {
+      [barcodeTypes addObject:AVMetadataObjectTypeITF14Code];
+    }
+    if (supportedFormats == nil || [supportedFormats containsObject:[self formatStringFrom:AVMetadataObjectTypeQRCode]]) {
+      [barcodeTypes addObject:AVMetadataObjectTypeQRCode];
+    }
+    if (supportedFormats == nil || [supportedFormats containsObject:[self formatStringFrom:AVMetadataObjectTypeUPCECode]]) {
+      [barcodeTypes addObject:AVMetadataObjectTypeUPCECode];
+    }
+    // NSLog(@"barcodeTypes : %@", barcodeTypes);
+    output.metadataObjectTypes = barcodeTypes;
+
+    [barcodeTypes release];
 
     // setup capture preview layer
     self.previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:captureSession];
@@ -486,19 +521,19 @@ parentViewController:(UIViewController*)parentViewController
 // convert barcode format to string
 //--------------------------------------------------------------------------
 - (NSString*)formatStringFrom:(NSString*)format {
-    if( [format isEqualToString:AVMetadataObjectTypeUPCECode] ) return @"UPC_E";
-    if( [format isEqualToString:AVMetadataObjectTypeCode39Code] ) return @"CODE_39";
     // if( [format isEqualToString:AVMetadataObjectTypeCode39Mod43Code] ) return @"";
+    // if( [format isEqualToString:AVMetadataObjectTypeInterleaved2of5Code] ) return @"";
+    if( [format isEqualToString:AVMetadataObjectTypeAztecCode] ) return @"AZTEC";
+    if( [format isEqualToString:AVMetadataObjectTypeCode128Code] ) return @"CODE_128";
+    if( [format isEqualToString:AVMetadataObjectTypeCode39Code] ) return @"CODE_39";
+    if( [format isEqualToString:AVMetadataObjectTypeCode93Code] ) return @"CODE_93";
+    if( [format isEqualToString:AVMetadataObjectTypeDataMatrixCode] ) return @"DATA_MATRIX";
     if( [format isEqualToString:AVMetadataObjectTypeEAN13Code] ) return @"EAN_13";
     if( [format isEqualToString:AVMetadataObjectTypeEAN8Code] ) return @"EAN_8";
-    if( [format isEqualToString:AVMetadataObjectTypeCode93Code] ) return @"CODE_93";
-    if( [format isEqualToString:AVMetadataObjectTypeCode128Code] ) return @"CODE_128";
-    // if( [format isEqualToString:AVMetadataObjectTypePDF417Code] ) return @"";
-    if( [format isEqualToString:AVMetadataObjectTypeQRCode] ) return @"QR_CODE";
-    // if( [format isEqualToString:AVMetadataObjectTypeAztecCode] ) return @"";
-    // if( [format isEqualToString:AVMetadataObjectTypeInterleaved2of5Code] ) return @"";
     if( [format isEqualToString:AVMetadataObjectTypeITF14Code] ) return @"ITF";
-    if( [format isEqualToString:AVMetadataObjectTypeDataMatrixCode] ) return @"DATA_MATRIX";
+    if( [format isEqualToString:AVMetadataObjectTypePDF417Code] ) return @"PDF417";
+    if( [format isEqualToString:AVMetadataObjectTypeQRCode] ) return @"QR_CODE";
+    if( [format isEqualToString:AVMetadataObjectTypeUPCECode] ) return @"UPC_E";
     return @"???";
 }
 
